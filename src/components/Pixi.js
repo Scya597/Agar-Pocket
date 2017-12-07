@@ -33,8 +33,9 @@ class Pixi extends Component {
 
     this.camera.addChild(border);
     // animation loop
+
     this.app.ticker.add(() => {
-      this.socket.emit('updateServerPos');
+      this.socket.emit('update');
       this.socket.on('updateClientPos', (playerList) => {
         _.forEach(playerList, (player) => {
           const sprite = _.find(this.camera.children, { uuid: player.uuid });

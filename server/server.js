@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import _ from 'lodash';
 import config from './config';
 import setting from '../src/setting';
+import { updateClientPos } from './gameLogic';
 
 const path = require('path');
 const http = require('http');
@@ -45,11 +46,8 @@ const io = require('socket.io')(server);
 const userList = [];
 const playerList = [];
 
-// ##################
 const startX = 100;
 const startY = 100;
-
-// ##################
 
 io.on('connection', (socket) => {
   console.log(`New client ${socket.handshake.query.uuid} connected`);
@@ -64,21 +62,8 @@ io.on('connection', (socket) => {
   socket.on('createPlayer', (uuid) => {
     playerList.push({ uuid, x: startX, y: startY });
   });
-  socket.on('updateServerPos', () => {
-    _.forEach(playerList, (player) => {
-      if (!player.theta) return;
-      if ((player.x + (setting.velocity * Math.cos(player.theta))) - setting.circleRadius >= 0 &&
-        player.x + (setting.velocity * Math.cos(player.theta)) +
-        setting.circleRadius <= setting.worldWidth) {
-        player.x += setting.velocity * Math.cos(player.theta);
-      }
 
-      if ((player.y + (setting.velocity * Math.sin(player.theta))) - setting.circleRadius >= 0 &&
-        player.y + (setting.velocity * Math.sin(player.theta)) +
-        setting.circleRadius <= setting.worldHeight) {
-        player.y += setting.velocity * Math.sin(player.theta);
-      }
-    });
+  socket.on('update', () => {
     socket.emit('updateClientPos', playerList);
   });
 
@@ -97,6 +82,10 @@ io.on('connection', (socket) => {
     io.emit('deletePlayer', socket.handshake.query.uuid);
   });
 });
+
+setInterval(() => {
+  updateClientPos(playerList, setting);
+}, 1000 / 60);
 
 server.listen(config.port, config.host, () => {
   console.info('Express listening on port', config.port);
