@@ -18,7 +18,7 @@ class Pixi extends Component {
       { antialias: true, backgroundColor: 0xe4e4e4, autoStart: true },
     );
 
-    this.refs.pixi.appendChild(this.app.view);
+    this.pixi.appendChild(this.app.view);
 
     // set camera
     this.camera = new PIXI.Container();
@@ -84,6 +84,7 @@ class Pixi extends Component {
       this.camera.removeChild(sprite);
     });
   }
+
   createBorder = (w, h) => {
     const graphics = new PIXI.Graphics();
     graphics.beginFill(0xffffff);
@@ -91,6 +92,7 @@ class Pixi extends Component {
     graphics.endFill();
     return graphics;
   }
+
   createCircle = (color, x, y, r) => {
     const graphics = new PIXI.Graphics();
     graphics.lineStyle();
@@ -99,9 +101,10 @@ class Pixi extends Component {
     graphics.endFill();
     return graphics;
   }
+
   render() {
     return (
-      <div className="pixi" ref="pixi" />
+      <div className="pixi" ref={(pixi) => { this.pixi = pixi; }} />
     );
   }
 }
