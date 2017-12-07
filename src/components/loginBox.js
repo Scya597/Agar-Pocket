@@ -45,17 +45,3 @@ class LoginBox extends Component {
 
 export default LoginBox;
 
-// <div className="box">
-// <div className="loginMenu">
-//   <h1 className="loginHeader">Welcome</h1>
-//   <input className="loginInput" placeholder="name"/>
-//   <button className="loginStart" onClick={this.setTitle}>START</button>
-//   <div className="loginOnline">
-//     <div className="loginOnlineDraw">Online</div>
-//     <ul className="loginOnlineul">
-// {this.state.userList.map(user =>
-//   (<li className="loginOnlineli"> {user.name} </li>))}
-//     </ul>
-//   </div>
-// </div>
-// </div>

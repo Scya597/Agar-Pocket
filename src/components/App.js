@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import socketIOClient from 'socket.io-client';
 import uuid from 'uuid/v1';
 import LoginBox from './loginBox';
-import Pixi from './Pixi';
+import Pixi from '../game/Pixi';
 
 
 class App extends Component {
