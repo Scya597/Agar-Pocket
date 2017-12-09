@@ -32,11 +32,17 @@ class PlayerContainer extends Container {
         }
       });
 
+      const arr = [];
       // clean children
-      this.children = this.children.filter((child) => {
-        const temp = child.flag;
-        child.flag = false;
-        return temp;
+      this.children.forEach((child, i) => {
+        if (child.flag === false) {
+          arr.push(i);
+        }
+        // FIXME: LINT ERROR BUT DON'T KNOW HOW TO FIX
+        child.flag = false; // reset
+      });
+      arr.reverse().forEach((i) => {
+        this.removeChildAt(i);
       });
     });
   }
@@ -59,11 +65,17 @@ class FoodContainer extends Container {
         sprite.flag = true;
       });
 
+      const arr = [];
       // clean children
-      this.children = this.children.filter((child) => {
-        const temp = child.flag;
-        child.flag = false;
-        return temp;
+      this.children.forEach((child, i) => {
+        if (child.flag === false) {
+          arr.push(i);
+        }
+        // FIXME: LINT ERROR BUT DON'T KNOW HOW TO FIX
+        child.flag = false; // reset
+      });
+      arr.reverse().forEach((i) => {
+        this.removeChildAt(i);
       });
     });
   }
