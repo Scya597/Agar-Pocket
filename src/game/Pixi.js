@@ -11,6 +11,7 @@ class Pixi extends Component {
     this.socket = props.socket;
     // FIXME:統一叫id?
     this.id = props.uuid;
+    this.name = props.name;
   }
   componentDidMount() {
     const appConfig = {
@@ -51,7 +52,7 @@ class Pixi extends Component {
   }
   emitInit = () => {
     // FIXME: name
-    this.socket.emit('INIT', this.id);
+    this.socket.emit('INIT', this.id, this.name);
   }
   updateCamera = (pos) => {
     this.gameScene.pivot.copy(pos);
