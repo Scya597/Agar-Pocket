@@ -16,9 +16,10 @@ class App extends Component {
     const { endpoint } = this.state;
     this.uuid = uuid();
     this.socket = socketIOClient(endpoint, { query: { uuid: this.uuid } });
+    this.handleLogin = this.handleLogin.bind(this);
   }
 
-  handleLogin = (name) => {
+  handleLogin(name) {
     console.log('handle');
     this.setState({ login: 1, name });
   }

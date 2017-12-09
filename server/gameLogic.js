@@ -1,7 +1,5 @@
-import _ from 'lodash';
-
 const updateClientPos = (playerList, setting) => {
-  _.forEach(playerList, (player) => {
+  playerList.forEach((player) => {
     if (!player.theta) return;
     if ((player.x + (setting.velocity * Math.cos(player.theta))) - setting.circleRadius >= 0 &&
       player.x + (setting.velocity * Math.cos(player.theta)) +

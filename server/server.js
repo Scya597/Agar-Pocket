@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
-import setting from '../src/setting';
+import setting from '../src/game/config';
 import { updateClientPos } from './gameLogic';
 
 const path = require('path');
