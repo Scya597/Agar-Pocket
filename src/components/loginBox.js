@@ -18,9 +18,9 @@ class LoginBox extends Component {
 
   setTitle = () => {
     console.log('set');
-    this.socket.emit('setName', this.textInput.value, this.uuid);
-    this.props.handlelogin(); // update app state
-    this.textInput.value = '';
+    this.socket.emit('setName', this.refs.text.value, this.uuid);
+    this.props.handlelogin(this.refs.text.value); // update app state
+    this.refs.text.value = '';
   }
 
   render() {
@@ -44,18 +44,3 @@ class LoginBox extends Component {
 }
 
 export default LoginBox;
-
-// <div className="box">
-// <div className="loginMenu">
-//   <h1 className="loginHeader">Welcome</h1>
-//   <input className="loginInput" placeholder="name"/>
-//   <button className="loginStart" onClick={this.setTitle}>START</button>
-//   <div className="loginOnline">
-//     <div className="loginOnlineDraw">Online</div>
-//     <ul className="loginOnlineul">
-// {this.state.userList.map(user =>
-//   (<li className="loginOnlineli"> {user.name} </li>))}
-//     </ul>
-//   </div>
-// </div>
-// </div>

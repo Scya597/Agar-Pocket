@@ -1,6 +1,5 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import _ from 'lodash';
 import config from './config';
 import setting from '../src/setting';
 import { updateClientPos } from './gameLogic';
