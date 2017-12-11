@@ -27,7 +27,7 @@ class Pixi extends Component {
     this.gameScene.interactive = true;
     this.app.stage.addChild(this.gameScene);
 
-    this.playerContainer = new PlayerContainer(this.socket, this.id, this.updateCamera);
+    this.playerContainer = new PlayerContainer(this.socket, this.id, this.updateCamera.bind(this));
     this.foodContainer = new FoodContainer(this.socket);
     this.bgContainer = new BgContainer();
     this.gameScene.addChild(this.playerContainer, this.foodContainer, this.bgContainer);
@@ -35,26 +35,32 @@ class Pixi extends Component {
     this.playerContainer.onGetPlayersData();
     this.foodContainer.onGetFoodsData();
     this.bgContainer.generateBg();
+    this.initTicker();
     this.emitInit();
     this.emitMouseMove();
     this.emitSpace();
   }
-  emitSpace = () => {
+  initTicker() {
+    this.app.ticker.add(() => {
+      this.socket.emit('GET_DATA');
+    });
+  }
+  emitSpace() {
     key('space', () => {
       this.socket.emit(this.uuid);
     });
   }
-  emitMouseMove = () => {
+  emitMouseMove() {
     this.gameScene.on('mousemove', (e) => {
       const mousePos = e.data.getLocalPosition(this.gameScene);
       this.socket.emit('Mouse_Move', this.uuid, mousePos);
     });
   }
-  emitInit = () => {
+  emitInit() {
     // FIXME: name
     this.socket.emit('INIT', this.id, this.name);
   }
-  updateCamera = (pos) => {
+  updateCamera(pos) {
     this.gameScene.pivot.copy(pos);
   }
   render() {
