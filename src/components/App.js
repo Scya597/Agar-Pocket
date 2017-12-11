@@ -14,7 +14,7 @@ class App extends Component {
       name: '',
     };
     const { endpoint } = this.state;
-    this.uuid = uuid();
+    this.id = uuid();
     this.socket = socketIOClient(endpoint, { query: { uuid: this.uuid } });
     this.handleLogin = this.handleLogin.bind(this);
   }
@@ -28,7 +28,7 @@ class App extends Component {
     return (
       <div>
         {this.state.login === 1
-          ? <Pixi socket={this.socket} uuid={this.uuid} name={this.name} />
+          ? <Pixi socket={this.socket} uuid={this.id} name={this.name} />
           : <LoginBox handlelogin={this.handleLogin} socket={this.socket} uuid={this.uuid} />}
       </div>
     );

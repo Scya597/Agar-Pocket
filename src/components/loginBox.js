@@ -7,18 +7,18 @@ class LoginBox extends Component {
       userList: [],
     };
     this.socket = props.socket;
-    this.uuid = props.uuid;
+    this.id = props.id;
   }
 
   componentWillMount() {
-    this.socket.on('getUserList', (userList) => {
+    this.socket.on('GET_USERLIST', (userList) => {
       this.setState({ userList });
     });
   }
 
   setTitle = () => {
     console.log('set');
-    this.socket.emit('setName', this.textInput, this.uuid);
+    this.socket.emit('SET_NAME', this.textInput, this.id);
     this.props.handlelogin(this.textInput); // update app state
     this.textInput = '';
   }

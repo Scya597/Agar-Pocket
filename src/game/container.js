@@ -3,17 +3,17 @@ import { Sprite, CellSprite, FoodSprite } from './sprite';
 import { worldWidth, worldHeight } from './config';
 
 class PlayerContainer extends Container {
-  constructor(socket, id, cb) {
+  constructor(arg) {
     super();
-    this.socket = socket;
-    this.id = id;
-    this.cb = cb;
+    this.socket = arg.socket;
+    this.id = arg.id;
+    this.updateCamera = arg.updateCamera;
     this.centroid = new Point();
   }
   onGetPlayersData() {
-    this.socket.on('GET_PLAYERS_DATA', (playerArr) => {
-      playerArr.forEach((player) => {
-        player.cellArr.forEach((cell) => {
+    this.socket.on('GET_PLAYERS_DATA', (playerList) => {
+      playerList.forEach((player) => {
+        player.cellList.forEach((cell) => {
           let sprite = this.children.find(child => child.id === cell.id);
           if (sprite === undefined) {
             sprite = new CellSprite(cell);
@@ -24,11 +24,11 @@ class PlayerContainer extends Container {
           sprite.flag = true;
         });
         if (player.id === this.id) {
-          const mx = player.cellArr.reduce((acc, cell) => acc + (cell.x * cell.mass));
-          const my = player.cellArr.reduce((acc, cell) => acc + (cell.y * cell.mass));
-          const m = player.cellArr.reduce((acc, cell) => acc + cell.mass);
+          const mx = player.cellList.reduce((acc, cell) => acc + (cell.x * cell.mass));
+          const my = player.cellList.reduce((acc, cell) => acc + (cell.y * cell.mass));
+          const m = player.cellList.reduce((acc, cell) => acc + cell.mass);
           this.centroid.set(mx / m, my / m);
-          this.cb(this.centroid);
+          this.updateCamera(this.centroid);
         }
       });
 
@@ -49,13 +49,13 @@ class PlayerContainer extends Container {
 }
 
 class FoodContainer extends Container {
-  constructor(socket) {
+  constructor(arg) {
     super();
-    this.socket = socket;
+    this.socket = arg.socket;
   }
   onGetFoodsData() {
-    this.socket.on('GET_FOODS_DATA', (foodArr) => {
-      foodArr.forEach((food) => {
+    this.socket.on('GET_FOODS_DATA', (foodList) => {
+      foodList.forEach((food) => {
         let sprite = this.children.find(child => child.id === food.id);
         if (sprite === undefined) {
           sprite = new FoodSprite(food);

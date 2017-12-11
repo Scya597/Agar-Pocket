@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Application, Sprite } from 'pixi.js';
+import { Application } from 'pixi.js';
 import key from 'keymaster';
 import { Container, PlayerContainer, FoodContainer, BgContainer } from './container';
-import { circleRadius } from './config';
-
 
 class Pixi extends Component {
   constructor(props) {
@@ -11,7 +9,7 @@ class Pixi extends Component {
     this.state = {};
     this.socket = props.socket;
     // FIXME:統一叫id?
-    this.id = props.uuid;
+    this.id = props.id;
     this.name = props.name;
   }
 
@@ -29,8 +27,13 @@ class Pixi extends Component {
     this.gameScene.interactive = true;
     this.app.stage.addChild(this.gameScene);
 
-    this.playerContainer = new PlayerContainer(this.socket, this.id, this.updateCamera);
-    this.foodContainer = new FoodContainer(this.socket);
+    this.playerContainer = new PlayerContainer({
+      socket: this.socket,
+      id: this.id,
+      updateCamera: this.updateCamera,
+    });
+
+    this.foodContainer = new FoodContainer({ socket: this.socket });
     this.bgContainer = new BgContainer();
     this.gameScene.addChild(this.playerContainer, this.foodContainer, this.bgContainer);
 
@@ -40,75 +43,24 @@ class Pixi extends Component {
     this.emitInit();
     this.emitMouseMove();
     this.emitSpace();
-    /*
-    this.app.ticker.add(() => {
-      this.socket.emit('update');
-      this.socket.on('updateClientPos', (playerList) => {
-        playerList.forEach((player) => {
-          const sprite = this.gameScene.children.find({ uuid: player.uuid });
-          if (!sprite) {
-            // not exist in gameScene
-            // create circle
-            let circle;
-            if (this.uuid === player.uuid) { // my sprite
-              circle = new Sprite(this.createCircle(0x3080e8, 0, 0, circleRadius)
-                .generateCanvasTexture());
-            } else {
-              circle = new Sprite(this.createCircle(0x9ce5f4, 0, 0, circleRadius)
-                .generateCanvasTexture());
-            }
-
-            circle.anchor.set(0.5, 0.5);
-            circle.uuid = player.uuid;
-            circle.x = player.x;
-            circle.y = player.y;
-
-            this.gameScene.addChild(circle);
-            if (this.uuid === player.uuid) {
-              // my sprite
-              this.gameScene.on('mousemove', (e) => {
-                const { x, y } = e.data.getLocalPosition(this.gameScene);
-                const theta = Math.atan2(y - circle.y, x - circle.x);
-                this.socket.emit('mouseMove', this.uuid, theta);
-                this.gameScene.pivot.copy(circle.position);
-              });
-            }
-          } else {
-            // already exist in camera
-            sprite.x = player.x;
-            sprite.y = player.y;
-            if (this.uuid === player.uuid) {
-              // my sprite
-              this.gameScene.pivot.copy(sprite.position);
-            }
-          }
-        });
-      });
-    });
-    // delete player socket on
-    this.socket.on('deletePlayer', (uuid) => {
-      const sprite = this.gameScene.children.find({ uuid });
-      this.gameScene.removeChild(sprite);
-    });
-    */
   }
 
   emitSpace = () => {
     key('space', () => {
-      this.socket.emit(this.uuid);
+      this.socket.emit('PRESS_SPACE', { id: this.id });
     });
   }
 
   emitMouseMove = () => {
     this.gameScene.on('mousemove', (e) => {
       const mousePos = e.data.getLocalPosition(this.gameScene);
-      this.socket.emit('Mouse_Move', this.uuid, mousePos);
+      this.socket.emit('MOUSE_MOVE', { id: this.id, mousePos });
     });
   }
 
   emitInit = () => {
     // FIXME: name
-    this.socket.emit('INIT', this.id, this.name);
+    this.socket.emit('INIT', { id: this.id, name: this.name });
   }
 
   updateCamera = (pos) => {
