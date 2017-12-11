@@ -28,7 +28,7 @@ class App extends Component {
     return (
       <div>
         {this.state.login === 1
-          ? <Pixi socket={this.socket} uuid={this.id} name={this.name} />
+          ? <Pixi socket={this.socket} id={this.id} name={this.state.name} />
           : <LoginBox handlelogin={this.handleLogin} socket={this.socket} uuid={this.uuid} />}
       </div>
     );

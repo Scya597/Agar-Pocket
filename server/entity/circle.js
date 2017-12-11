@@ -7,7 +7,7 @@ class Circle {
   }
 
   getRadius() {
-    return this.mass;
+    return Math.sqrt(this.mass / Math.PI);
   }
 }
 

@@ -2,7 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
 import setting from '../src/game/config';
-import { updateClientPos } from './gameLogic';
+import { updatePlayerData } from './gameLogic';
+import Player from './entity/player';
 
 const path = require('path');
 const http = require('http');
@@ -45,47 +46,46 @@ const io = require('socket.io')(server);
 let userList = [];
 let playerList = [];
 
-const startX = 100;
-const startY = 100;
-
 io.on('connection', (socket) => {
   console.log(`New client ${socket.handshake.query.uuid} connected`);
   // login
   socket.emit('GET_USERLIST', userList);
 
-  socket.on('SET_NAME', (name, uuid) => {
-    userList.push({ name, uuid });
+  socket.on('SET_NAME', (userInfo) => {
+    userList.push({ name: userInfo.name, id: userInfo.id });
     io.emit('GET_USERLIST', userList);
   });
   // pixi
   socket.on('INIT', (player) => {
-    playerList.push({ id: player.id, x: startX, y: startY });
-  });
-
-  socket.on('update', () => {
-    socket.emit('GET_PLAYERS_DATA', playerList);
+    playerList.push(new Player({ id: player.id, name: player.name }));
   });
 
   socket.on('MOUSE_MOVE', (mouseData) => {
-    const player = playerList.find({ id: mouseData.id });
+    const player = playerList.find((element) => {
+      if (element.id === mouseData.id) {
+        return element;
+      }
+      return false;
+    });
     if (player) {
-      player.pos = mouseData.mousePos;
+      player.mousePos = mouseData.mousePos;
     }
+  });
+
+  socket.on('GET_DATA', () => {
+    socket.emit('GET_PLAYERS_DATA', playerList);
   });
 
   socket.on('disconnect', () => {
     console.log(`Client ${socket.handshake.query.uuid} disconnected`);
     userList = userList.filter(user => user.uuid !== socket.handshake.query.uuid);
     playerList = playerList.filter(player => player.uuid !== socket.handshake.query.uuid);
-    // _.remove(userList, user => user.uuid === socket.handshake.query.uuid);
-    // _.remove(playerList, player => player.uuid === socket.handshake.query.uuid);
     io.emit('GET_USERLIST', userList);
-    // io.emit('deletePlayer', socket.handshake.query.uuid);
   });
 });
 
 setInterval(() => {
-  updateClientPos(playerList, setting);
+  updatePlayerData(playerList, setting);
 }, 1000 / 60);
 
 server.listen(config.port, config.host, () => {

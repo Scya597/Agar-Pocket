@@ -8,9 +8,10 @@ class Pixi extends Component {
     super();
     this.state = {};
     this.socket = props.socket;
-    // FIXME:統一叫id?
     this.id = props.id;
     this.name = props.name;
+
+    this.updateCamera = this.updateCamera.bind(this);
   }
 
   componentDidMount() {
@@ -45,26 +46,30 @@ class Pixi extends Component {
     this.emitMouseMove();
     this.emitSpace();
   }
+
   initTicker() {
     this.app.ticker.add(() => {
       this.socket.emit('GET_DATA');
     });
   }
+
   emitSpace() {
     key('space', () => {
       this.socket.emit('PRESS_SPACE', { id: this.id });
     });
   }
+
   emitMouseMove() {
     this.gameScene.on('mousemove', (e) => {
       const mousePos = e.data.getLocalPosition(this.gameScene);
       this.socket.emit('MOUSE_MOVE', { id: this.id, mousePos });
     });
   }
+
   emitInit() {
-    // FIXME: name
     this.socket.emit('INIT', { id: this.id, name: this.name });
   }
+
   updateCamera(pos) {
     this.gameScene.pivot.copy(pos);
   }
