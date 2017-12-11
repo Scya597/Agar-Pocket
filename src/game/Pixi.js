@@ -40,30 +40,32 @@ class Pixi extends Component {
     this.playerContainer.onGetPlayersData();
     this.foodContainer.onGetFoodsData();
     this.bgContainer.generateBg();
+    this.initTicker();
     this.emitInit();
     this.emitMouseMove();
     this.emitSpace();
   }
-
-  emitSpace = () => {
+  initTicker() {
+    this.app.ticker.add(() => {
+      this.socket.emit('GET_DATA');
+    });
+  }
+  emitSpace() {
     key('space', () => {
       this.socket.emit('PRESS_SPACE', { id: this.id });
     });
   }
-
-  emitMouseMove = () => {
+  emitMouseMove() {
     this.gameScene.on('mousemove', (e) => {
       const mousePos = e.data.getLocalPosition(this.gameScene);
       this.socket.emit('MOUSE_MOVE', { id: this.id, mousePos });
     });
   }
-
-  emitInit = () => {
+  emitInit() {
     // FIXME: name
     this.socket.emit('INIT', { id: this.id, name: this.name });
   }
-
-  updateCamera = (pos) => {
+  updateCamera(pos) {
     this.gameScene.pivot.copy(pos);
   }
 
