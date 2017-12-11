@@ -12,6 +12,7 @@ class PlayerContainer extends Container {
   }
   onGetPlayersData() {
     this.socket.on('GET_PLAYERS_DATA', (playerList) => {
+      console.log(playerList);
       playerList.forEach((player) => {
         player.cellList.forEach((cell) => {
           let sprite = this.children.find(child => child.id === cell.id);

@@ -41,15 +41,16 @@ class Pixi extends Component {
     this.emitInit();
     this.emitMouseMove();
     this.emitSpace();
-    this.playerContainer.onGetPlayersData();
+    this.initTicker();
+    // this.playerContainer.onGetPlayersData();
     // this.foodContainer.onGetFoodsData();
     this.bgContainer.generateBg();
-    this.initTicker();
   }
 
   initTicker() {
     this.app.ticker.add(() => {
       this.socket.emit('GET_DATA');
+      this.playerContainer.onGetPlayersData();
     });
   }
 
