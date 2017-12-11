@@ -38,13 +38,13 @@ class Pixi extends Component {
     this.bgContainer = new BgContainer();
     this.gameScene.addChild(this.playerContainer, this.foodContainer, this.bgContainer);
 
-    this.playerContainer.onGetPlayersData();
-    this.foodContainer.onGetFoodsData();
-    this.bgContainer.generateBg();
-    this.initTicker();
     this.emitInit();
     this.emitMouseMove();
     this.emitSpace();
+    this.playerContainer.onGetPlayersData();
+    // this.foodContainer.onGetFoodsData();
+    this.bgContainer.generateBg();
+    this.initTicker();
   }
 
   initTicker() {

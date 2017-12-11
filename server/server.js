@@ -57,7 +57,8 @@ io.on('connection', (socket) => {
   });
   // pixi
   socket.on('INIT', (player) => {
-    playerList.push(new Player({ id: player.id, name: player.name }));
+    const newPlayer = new Player({ id: player.id, name: player.name });
+    playerList.push(newPlayer);
   });
 
   socket.on('MOUSE_MOVE', (mouseData) => {

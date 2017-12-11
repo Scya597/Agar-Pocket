@@ -1,11 +1,12 @@
 const updatePlayerData = (playerList, setting) => {
   playerList.forEach((player) => {
-    player.cellArr.forEach((cell) => {
+    console.log(player);
+    player.cellList.forEach((cell) => {
       cell.vel.x = player.mousePos.x - cell.pos.x;
       cell.vel.y = player.mousePos.y - cell.pos.y;
     });
 
-    player.cellArr.forEach((cell) => {
+    player.cellList.forEach((cell) => {
       const cellRadius = cell.getRadius();
       if ((cell.pos.x + (cell.vel.x * (1 / 60))) - cellRadius >= 0 &&
         (cell.pos.x + (cell.vel.x * (1 / 60))) + cellRadius <= setting.worldWidth) {
