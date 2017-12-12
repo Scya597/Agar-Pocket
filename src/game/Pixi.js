@@ -42,8 +42,8 @@ class Pixi extends Component {
     this.emitMouseMove();
     this.emitSpace();
     this.initTicker();
-    // this.playerContainer.onGetPlayersData();
-    // this.foodContainer.onGetFoodsData();
+    this.playerContainer.onGetPlayersData();
+    this.foodContainer.onGetFoodsData();
     this.bgContainer.generateBg();
   }
 

@@ -1,6 +1,6 @@
 import { Container, Point, Graphics } from 'pixi.js';
 import { Sprite, CellSprite, FoodSprite } from './sprite';
-import { worldWidth, worldHeight } from './config';
+import config from './config';
 
 class PlayerContainer extends Container {
   constructor(arg) {
@@ -89,7 +89,7 @@ class BgContainer extends Container {
   static generateRect() {
     const graphics = new Graphics();
     graphics.beginFill(0xffffff);
-    graphics.drawRect(0, 0, worldWidth, worldHeight);
+    graphics.drawRect(0, 0, config.worldWidth, config.worldHeight);
     graphics.endFill();
     const sprite = new Sprite(graphics.generateCanvasTexture());
     return sprite;
