@@ -47,7 +47,7 @@ let userList = [];
 let playerList = [];
 
 io.on('connection', (socket) => {
-  console.log(`New client ${socket.handshake.query.uuid} connected`);
+  console.log('New client connected');
   // login
   socket.emit('GET_USERLIST', userList);
 
@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(`Client ${socket.handshake.query.uuid} disconnected`);
+    console.log('Client disconnected');
     userList = userList.filter(user => user.uuid !== socket.handshake.query.uuid);
     playerList = playerList.filter(player => player.uuid !== socket.handshake.query.uuid);
     io.emit('GET_USERLIST', userList);

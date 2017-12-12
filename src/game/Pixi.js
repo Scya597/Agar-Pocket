@@ -21,8 +21,10 @@ class Pixi extends Component {
       antialias: true,
     };
     this.app = new Application(appConfig);
+    window.onresize = () => {
+      this.app.renderer.resize(window.innerWidth, window.innerHeight);
+    };
     this.pixi.appendChild(this.app.view);
-
     this.gameScene = new Container();
     this.gameScene.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
     this.gameScene.interactive = true;
@@ -36,41 +38,30 @@ class Pixi extends Component {
 
     this.foodContainer = new FoodContainer({ socket: this.socket });
     this.bgContainer = new BgContainer();
-    this.gameScene.addChild(this.playerContainer, this.foodContainer, this.bgContainer);
+    this.gameScene.addChild(this.bgContainer, this.playerContainer, this.foodContainer);
 
     this.emitInit();
-    this.emitMouseMove();
     this.emitSpace();
     this.initTicker();
     this.playerContainer.onGetPlayersData();
     this.foodContainer.onGetFoodsData();
     this.bgContainer.generateBg();
   }
-
   initTicker() {
     this.app.ticker.add(() => {
       this.socket.emit('GET_DATA');
+      this.socket.emit('MOUSE_MOVE', this.app.renderer.plugins.interaction.mouse.getLocalPosition(this.gameScene));
       this.playerContainer.onGetPlayersData();
     });
   }
-
+  emitInit() {
+    this.socket.emit('INIT', { id: this.id, name: this.name });
+  }
   emitSpace() {
     key('space', () => {
       this.socket.emit('PRESS_SPACE', { id: this.id });
     });
   }
-
-  emitMouseMove() {
-    this.gameScene.on('mousemove', (e) => {
-      const mousePos = e.data.getLocalPosition(this.gameScene);
-      this.socket.emit('MOUSE_MOVE', { id: this.id, mousePos });
-    });
-  }
-
-  emitInit() {
-    this.socket.emit('INIT', { id: this.id, name: this.name });
-  }
-
   updateCamera(pos) {
     this.gameScene.pivot.copy(pos);
   }

@@ -5,7 +5,6 @@ class Circle {
     this.id = props.id;
     this.color = props.color;
   }
-
   getRadius() {
     return Math.sqrt(this.mass / Math.PI);
   }

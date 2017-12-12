@@ -1,11 +1,14 @@
 import { Sprite, Graphics } from 'pixi.js';
 
+function getRadius(mass) {
+  return Math.sqrt(mass / Math.PI);
+}
 
 function generateCircleTexture(circle) {
   const graphics = new Graphics();
   graphics.lineStyle();
   graphics.beginFill(circle.color);
-  graphics.drawCircle(0, 0, circle.r);
+  graphics.drawCircle(0, 0, getRadius(circle.mass));
   graphics.endFill();
   return graphics.generateCanvasTexture();
 }

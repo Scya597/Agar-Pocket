@@ -1,6 +1,5 @@
 const updatePlayerData = (playerList, setting) => {
   playerList.forEach((player) => {
-    console.log(player.name);
     player.cellList.forEach((cell) => {
       cell.vel.x = player.mousePos.x - cell.pos.x;
       cell.vel.y = player.mousePos.y - cell.pos.y;
