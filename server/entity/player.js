@@ -2,7 +2,13 @@ import uuid from 'uuid/v1';
 
 import Cell from './cell';
 
+/**
+ * The Player class
+ */
 class Player {
+  /**
+   * @param {object} [props] - the property of Food
+   */
   constructor(props) {
     this.id = props.id;
     this.name = props.name;
@@ -17,12 +23,18 @@ class Player {
     })];
   }
 
+  /**
+   * clean the Cell in the cellList that has this.isEaten == true
+   */
   updateCellList() {
     console.log(this.id);
   }
 
+  /**
+   * @return {boolean} - whether player is dead or not
+   */
   isDead() {
-    return this.cellList.size();
+    return this.cellList.size() === 0;
   }
 }
 

@@ -43,8 +43,8 @@ app.use((err, req, res, next) => {
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
-let userList = [];
-let playerList = [];
+const userList = [];
+const playerList = [];
 
 io.on('connection', (socket) => {
   console.log('New client connected');
