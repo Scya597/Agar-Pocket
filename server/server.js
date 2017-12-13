@@ -53,6 +53,7 @@ io.on('connection', (socket) => {
 
   socket.on('SET_NAME', (userInfo) => {
     userList.push({ name: userInfo.name, id: userInfo.id });
+    console.log('socket on SET_NAME userList:', userList);
     io.emit('GET_USERLIST', userList);
   });
   // pixi
@@ -79,8 +80,8 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
-    userList = userList.filter(user => user.uuid !== socket.handshake.query.uuid);
-    playerList = playerList.filter(player => player.uuid !== socket.handshake.query.uuid);
+    userList.splice(userList.findIndex(user => user.id === socket.handshake.query.id), 1);
+    playerList.splice(playerList.findIndex(player => player.id === socket.handshake.query.id), 1);
     io.emit('GET_USERLIST', userList);
   });
 });

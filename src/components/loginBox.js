@@ -3,24 +3,22 @@ import React, { Component } from 'react';
 class LoginBox extends Component {
   constructor(props) {
     super();
-    // this.state = {
-    //   userList: [],
-    // };
-    this.userList = [];
+    this.state = {
+      userList: [],
+    };
     this.socket = props.socket;
     this.id = props.id;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.socket.on('GET_USERLIST', (userList) => {
-      this.userList = userList;
-      // this.setState({ userList });
+      this.setState({ userList });
     });
   }
 
   setTitle = () => {
     console.log('setTitle: socket.emit SET_NAME');
-    this.socket.emit('SET_NAME', { textInput: this.textInput.value, id: this.id });
+    this.socket.emit('SET_NAME', { name: this.textInput.value, id: this.id });
     this.props.handlelogin(this.textInput.value); // update app state
     this.textInput.value = '';
   }
@@ -35,7 +33,7 @@ class LoginBox extends Component {
           <div className="loginOnline">
             <div className="loginOnlineDraw">Online</div>
             <ul className="loginOnlineul">
-              {this.userList.map(user =>
+              {this.state.userList.map(user =>
             (<li className="loginOnlineli" key={user.id}> {user.name} </li>))}
             </ul>
           </div>
