@@ -24,9 +24,9 @@ class PlayerContainer extends Container {
           sprite.flag = true;
         });
         if (player.id === this.id) {
-          const mx = player.cellList.reduce((acc, cell) => acc + (cell.x * cell.mass));
-          const my = player.cellList.reduce((acc, cell) => acc + (cell.y * cell.mass));
-          const m = player.cellList.reduce((acc, cell) => acc + cell.mass);
+          const mx = player.cellList.reduce((acc, cell) => acc + (cell.pos.x * cell.mass), 0);
+          const my = player.cellList.reduce((acc, cell) => acc + (cell.pos.y * cell.mass), 0);
+          const m = player.cellList.reduce((acc, cell) => acc + cell.mass, 0);
           this.centroid.set(mx / m, my / m);
           this.updateCamera(this.centroid);
         }

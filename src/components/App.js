@@ -15,7 +15,7 @@ class App extends Component {
     };
     const { endpoint } = this.state;
     this.id = uuid();
-    this.socket = socketIOClient(endpoint, { query: { uuid: this.uuid } });
+    this.socket = socketIOClient(endpoint);
     this.handleLogin = this.handleLogin.bind(this);
   }
 

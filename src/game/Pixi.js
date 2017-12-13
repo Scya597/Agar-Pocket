@@ -21,14 +21,15 @@ class Pixi extends Component {
       antialias: true,
     };
     this.app = new Application(appConfig);
-    window.onresize = () => {
-      this.app.renderer.resize(window.innerWidth, window.innerHeight);
-    };
     this.pixi.appendChild(this.app.view);
     this.gameScene = new Container();
-    this.gameScene.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
     this.gameScene.interactive = true;
+    this.gameScene.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
     this.app.stage.addChild(this.gameScene);
+    window.onresize = () => {
+      this.app.renderer.resize(window.innerWidth, window.innerHeight);
+      this.gameScene.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
+    };
 
     this.playerContainer = new PlayerContainer({
       socket: this.socket,
@@ -50,7 +51,7 @@ class Pixi extends Component {
   initTicker() {
     this.app.ticker.add(() => {
       this.socket.emit('GET_DATA');
-      this.socket.emit('MOUSE_MOVE', this.app.renderer.plugins.interaction.mouse.getLocalPosition(this.gameScene));
+      this.socket.emit('MOUSE_MOVE', { mousePos: this.app.renderer.plugins.interaction.mouse.getLocalPosition(this.gameScene), id: this.id });
       this.playerContainer.onGetPlayersData();
     });
   }
