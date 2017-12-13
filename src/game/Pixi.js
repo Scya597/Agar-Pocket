@@ -52,7 +52,7 @@ class Pixi extends Component {
     this.app.ticker.add(() => {
       this.socket.emit('GET_DATA');
       this.socket.emit('MOUSE_MOVE', { mousePos: this.app.renderer.plugins.interaction.mouse.getLocalPosition(this.gameScene), id: this.id });
-      this.playerContainer.onGetPlayersData();
+      // this.playerContainer.onGetPlayersData();
     });
   }
   emitInit() {
