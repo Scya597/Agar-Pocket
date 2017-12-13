@@ -18,7 +18,6 @@ class PlayerContainer extends Container {
           if (sprite === undefined) {
             sprite = new CellSprite(cell);
             this.addChild(sprite);
-            console.log(this.children);
           }
           sprite.updatePos(cell.pos);
           sprite.updateCell(cell); // update size
