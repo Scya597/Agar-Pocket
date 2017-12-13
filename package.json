@@ -9,7 +9,8 @@
     "build:client": "webpack --config webpack.prod.config.js -p",
     "build:server": "webpack --config webpack.server.config.js -p",
     "build": "npm-run-all build:*",
-    "dev": "NODE_ENV=dev webpack-dashboard -- nodemon --exec babel-node server/server.js --ignore public/ --ignore src/"
+    "dev": "NODE_ENV=dev webpack-dashboard -- nodemon --exec babel-node server/server.js --ignore public/ --ignore src/",
+    "flow": "flow"
   },
   "author": "Chan Yu An",
   "license": "MIT",
@@ -30,6 +31,7 @@
     "babel-eslint": "^8.0.1",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
     "babel-preset-minify": "^0.2.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
@@ -39,6 +41,7 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.4.0",
+    "flow-bin": "^0.61.0",
     "html-webpack-plugin": "^2.30.1",
     "json-loader": "^0.5.7",
     "node-sass": "^4.5.3",
