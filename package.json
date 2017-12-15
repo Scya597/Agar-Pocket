@@ -10,7 +10,8 @@
     "build:server": "webpack --config webpack.server.config.js -p",
     "build": "npm-run-all build:*",
     "dev": "NODE_ENV=dev webpack-dashboard -- nodemon --exec babel-node server/server.js --ignore public/ --ignore src/",
-    "flow": "flow"
+    "flow": "flow",
+    "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "author": "Chan Yu An",
   "license": "MIT",
@@ -43,7 +44,9 @@
     "eslint-plugin-react": "^7.4.0",
     "flow-bin": "^0.61.0",
     "html-webpack-plugin": "^2.30.1",
+    "jsdoc": "^3.5.5",
     "json-loader": "^0.5.7",
+    "minami": "^1.2.3",
     "node-sass": "^4.5.3",
     "nodemon": "^1.12.1",
     "npm-run-all": "^4.1.1",
