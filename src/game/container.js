@@ -1,3 +1,5 @@
+// @flow
+
 import { Container, Point, Graphics } from 'pixi.js';
 import { Sprite, CellSprite, FoodSprite } from './sprite';
 import config from './config';

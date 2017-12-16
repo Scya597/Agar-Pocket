@@ -1,4 +1,4 @@
-const updatePlayerData = (playerList, setting) => {
+const updatePlayerPosition = (playerList, setting) => {
   playerList.forEach((player) => {
     player.cellList.forEach((cell) => {
       cell.vel.x = player.mousePos.x - cell.pos.x;
@@ -19,11 +19,27 @@ const updatePlayerData = (playerList, setting) => {
   });
 };
 
-const cons = () => {
-  console.log('ha');
+const updatePlayersBoxValue = (playerList) => {
+  playerList.forEach((player) => {
+    const xTop = [];
+    const yTop = [];
+    const xBottom = [];
+    const yBottom = [];
+    player.cellList.forEach((cell) => {
+      xTop.push(cell.pos.x + cell.getRadius());
+      yTop.push(cell.pos.y + cell.getRadius());
+      xBottom.push(cell.pos.x - cell.getRadius());
+      yBottom.push(cell.pos.y - cell.getRadius());
+    });
+    player.box.xTop = Math.max(...xTop);
+    player.box.yTop = Math.max(...yTop);
+    player.box.xBottom = Math.min(...xBottom);
+    player.box.yBottom = Math.min(...yBottom);
+  });
 };
 
+
 export {
-  updatePlayerData,
-  cons,
+  updatePlayerPosition,
+  updatePlayersBoxValue,
 };

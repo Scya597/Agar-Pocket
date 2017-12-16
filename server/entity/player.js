@@ -21,6 +21,12 @@ class Player {
       vel: { x: 0, y: 0 },
       isEaten: false,
     })];
+    this.box = {
+      xTop: 0,
+      xBottom: 0,
+      yTop: 0,
+      yBottom: 0,
+    };
   }
 
   /**

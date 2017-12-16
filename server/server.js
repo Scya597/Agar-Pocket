@@ -1,9 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
-import setting from '../src/game/config';
-import { updatePlayerData } from './gameLogic';
-import Player from './entity/player';
+import ioActivate from './server-io-activate';
 
 const path = require('path');
 const http = require('http');
@@ -43,57 +41,9 @@ app.use((err, req, res, next) => {
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
-const userList = [];
-const playerList = [];
-
-io.on('connection', (socket) => {
-  console.log('New client connected');
-  // login
-  socket.emit('GET_USERLIST', userList);
-
-  socket.on('SET_NAME', (userInfo) => {
-    userList.push({ name: userInfo.name, id: userInfo.id });
-    console.log('socket on SET_NAME userList:', userList);
-    io.emit('GET_USERLIST', userList);
-  });
-  // pixi
-  socket.on('INIT', (player) => {
-    const newPlayer = new Player({ id: player.id, name: player.name });
-    playerList.push(newPlayer);
-  });
-
-  socket.on('MOUSE_MOVE', (mouseData) => {
-    const player = playerList.find((element) => {
-      if (element.id === mouseData.id) {
-        return element;
-      }
-      return false;
-    });
-    if (player) {
-      player.mousePos = mouseData.mousePos;
-    }
-  });
-
-  socket.on('GET_DATA', () => {
-    socket.emit('GET_PLAYERS_DATA', playerList);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-    userList.splice(userList.findIndex(user => user.id === socket.handshake.query.id), 1);
-    playerList.splice(playerList.findIndex(player => player.id === socket.handshake.query.id), 1);
-    io.emit('GET_USERLIST', userList);
-  });
-});
-
-setInterval(() => {
-  updatePlayerData(playerList, setting);
-}, 1000 / 60);
+ioActivate(io);
 
 server.listen(config.port, config.host, () => {
   console.info('Express listening on port', config.port);
   console.log(process.env.NODE_ENV);
 });
-
-// GET_FOODS_DATA
-// PRESS_SPACE
