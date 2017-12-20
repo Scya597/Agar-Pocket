@@ -1,45 +1,58 @@
-const updatePlayerPosition = (playerList, setting) => {
-  playerList.forEach((player) => {
-    player.cellList.forEach((cell) => {
-      cell.vel.x = player.mousePos.x - cell.pos.x;
-      cell.vel.y = player.mousePos.y - cell.pos.y;
+import { updatePlayerPosition, updatePlayersBoxValue, checkAllEaten, removeEatenCells } from './physicsEngine';
+import Player from './entity/player';
+import setting from '../src/game/config';
+
+export default function ioActivate(io) {
+  const userList = [];
+  const playerList = [];
+
+  io.on('connection', (socket) => {
+    console.log('New client connected');
+    // login
+    socket.emit('GET_USERLIST', userList);
+
+    socket.on('SET_NAME', (userInfo) => {
+      userList.push({ name: userInfo.name, id: userInfo.id });
+      console.log('socket on SET_NAME userList:', userList);
+      io.emit('GET_USERLIST', userList);
+    });
+    // pixi
+    socket.on('INIT', (player) => {
+      const newPlayer = new Player({ id: player.id, name: player.name });
+      playerList.push(newPlayer);
     });
 
-    player.cellList.forEach((cell) => {
-      const cellRadius = cell.getRadius();
-      if ((cell.pos.x + (cell.vel.x * (1 / 60))) - cellRadius >= 0 &&
-        (cell.pos.x + (cell.vel.x * (1 / 60))) + cellRadius <= setting.worldWidth) {
-        cell.pos.x += cell.vel.x * (1 / 60);
+    socket.on('MOUSE_MOVE', (mouseData) => {
+      const player = playerList.find((element) => {
+        if (element.id === mouseData.id) {
+          return element;
+        }
+        return false;
+      });
+      if (player) {
+        player.mousePos = mouseData.mousePos;
       }
-      if ((cell.pos.y + (cell.vel.y * (1 / 60))) - cellRadius >= 0 &&
-        (cell.pos.y + (cell.vel.y * (1 / 60))) + cellRadius <= setting.worldHeight) {
-        cell.pos.y += cell.vel.y * (1 / 60);
-      }
+    });
+
+    socket.on('GET_DATA', () => {
+      socket.emit('GET_PLAYERS_DATA', playerList);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Client disconnected');
+      userList.splice(userList.findIndex(user => user.id === socket.handshake.query.id), 1);
+      playerList.splice(playerList.findIndex(player => player.id === socket.handshake.query.id), 1);
+      io.emit('GET_USERLIST', userList);
     });
   });
-};
 
-const updatePlayersBoxValue = (playerList) => {
-  playerList.forEach((player) => {
-    const xTop = [];
-    const yTop = [];
-    const xBottom = [];
-    const yBottom = [];
-    player.cellList.forEach((cell) => {
-      xTop.push(cell.pos.x + cell.getRadius());
-      yTop.push(cell.pos.y + cell.getRadius());
-      xBottom.push(cell.pos.x - cell.getRadius());
-      yBottom.push(cell.pos.y - cell.getRadius());
-    });
-    player.box.xTop = Math.max(...xTop);
-    player.box.yTop = Math.max(...yTop);
-    player.box.xBottom = Math.min(...xBottom);
-    player.box.yBottom = Math.min(...yBottom);
-  });
-};
+  setInterval(() => {
+    updatePlayerPosition(playerList, setting);
+    updatePlayersBoxValue(playerList);
+    checkAllEaten(playerList);
+    removeEatenCells(playerList);
+  }, 1000 / 60);
+}
 
-
-export {
-  updatePlayerPosition,
-  updatePlayersBoxValue,
-};
+// GET_FOODS_DATA
+// PRESS_SPACE

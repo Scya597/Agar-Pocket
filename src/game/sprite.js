@@ -6,7 +6,6 @@ function getRadius(mass) {
 
 function generateCircleTexture(circle) {
   const graphics = new Graphics();
-  circle.mass = 1000;
   graphics.lineStyle();
   graphics.beginFill(circle.color);
   graphics.drawCircle(0, 0, getRadius(circle.mass));
@@ -41,4 +40,3 @@ class FoodSprite extends Sprite {
 
 
 export { Sprite, CellSprite, FoodSprite };
-

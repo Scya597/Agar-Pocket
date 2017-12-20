@@ -1,5 +1,3 @@
-import uuid from 'uuid/v1';
-
 import Cell from './cell';
 
 /**
@@ -14,9 +12,9 @@ class Player {
     this.name = props.name;
     this.mousePos = { x: 100, y: 100 };
     this.cellList = [new Cell({
-      mass: 10,
+      mass: 10000 + (5000 * Math.random()),
       pos: { x: 100, y: 100 },
-      id: uuid(),
+      id: props.id,
       color: 0x111111,
       vel: { x: 0, y: 0 },
       isEaten: false,

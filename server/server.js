@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
-import ioActivate from './server-io-activate';
+import ioActivate from './gameLogic';
 
 const path = require('path');
 const http = require('http');
