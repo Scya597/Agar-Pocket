@@ -45,7 +45,8 @@ class Pixi extends Component {
     this.pixi.appendChild(this.app.view);
     /**
      * A PIXI.Container representing the camera.
-     * It contains [playerContainer]{@link Pixi#playerContainer}, [foodContainer]{@link Pixi#foodContainer} and [bgContainer]{@link Pixi#bgContainer}.
+     * It contains [playerContainer]{@link Pixi#playerContainer},
+     * [foodContainer]{@link Pixi#foodContainer} and [bgContainer]{@link Pixi#bgContainer}.
      * @member  {PIXI.Container} */
     this.gameScene = new Container();
     this.gameScene.interactive = true;
@@ -77,7 +78,7 @@ class Pixi extends Component {
     this.gameScene.addChild(this.bgContainer, this.playerContainer, this.foodContainer);
 
     this.socket.emit('INIT', { id: this.id, name: this.name });
-    this.emitSpace();
+    // this.emitSpace();
     this.initSpaceEmitter();
     this.playerContainer.onGetPlayersData();
     this.foodContainer.onGetFoodsData();
