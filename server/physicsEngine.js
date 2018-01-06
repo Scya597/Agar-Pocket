@@ -1,3 +1,7 @@
+import uuid from 'uuid/v1';
+
+import Food from './entity/food';
+
 const updatePlayerPosition = (playerList, setting) => {
   playerList.forEach((player) => {
     player.cellList.forEach((cell) => {
@@ -49,12 +53,18 @@ const checkTwoPlayerBoxOverlap = (playerA, playerB) => {
 const checkTwoCellEaten = (cellA, cellB) => {
   if (Math.sqrt(((cellA.pos.x - cellB.pos.x) ** 2) +
   ((cellA.pos.y - cellB.pos.y) ** 2)) < cellA.getRadius()) {
-    cellB.isEaten = true;
-    cellA.mass += cellB.mass;
+    if (cellA.mass > cellB.mass) {
+      cellA.eat(cellB);
+    }
+    // cellB.isEaten = true;
+    // cellA.mass += cellB.mass;
   } else if (Math.sqrt(((cellA.pos.x - cellB.pos.x) ** 2) +
   ((cellA.pos.y - cellB.pos.y) ** 2)) < cellB.getRadius()) {
-    cellA.isEaten = true;
-    cellB.mass += cellA.mass;
+    if (cellB.mass > cellA.mass) {
+      cellB.eat(cellA);
+    }
+    // cellA.isEaten = true;
+    // cellB.mass += cellA.mass;
   }
 };
 
@@ -70,7 +80,7 @@ const checkAllEaten = (playerList) => {
   for (let i = 0; i < playerList.length; i += 1) {
     for (let j = i; j < playerList.length; j += 1) {
       if (i === j) {
-        console.log('same player');
+        // console.log('same player');
       } else if (checkTwoPlayerBoxOverlap(playerList[i], playerList[j])) {
         checkTwoPlayerEaten(playerList[i], playerList[j]);
       }
@@ -78,6 +88,7 @@ const checkAllEaten = (playerList) => {
   }
 };
 
+// write this logic in player
 const removeEatenCells = (playerList) => {
   playerList.forEach((player) => {
     const isEatenList = [];
@@ -92,9 +103,55 @@ const removeEatenCells = (playerList) => {
   });
 };
 
+const generateFoods = (foodList, setting) => {
+  for (let i = 0; i < 400 - foodList.length; i += 1) {
+    foodList.push(new Food({
+      mass: 100,
+      pos: { x: Math.random() * setting.worldWidth, y: Math.random() * setting.worldHeight },
+      id: uuid(),
+      color: 0x111111,
+      isEaten: false,
+    }));
+  }
+};
+
+const checkOneFoodEaten = (cell, food) => {
+  if (Math.sqrt(((cell.pos.x - food.pos.x) ** 2) +
+  ((cell.pos.y - food.pos.y) ** 2)) < cell.getRadius()) {
+    food.isEaten = true;
+    cell.mass += food.mass;
+  }
+};
+
+const checkAllFoodEaten = (playerList, foodList) => {
+  for (let i = 0; i < playerList.length; i += 1) {
+    for (let j = 0; j < playerList[i].cellList.length; j += 1) {
+      for (let k = 0; k < foodList.length; k += 1) {
+        checkOneFoodEaten(playerList[i].cellList[j], foodList[k]);
+      }
+    }
+  }
+};
+
+const removeEatenFoods = (foodList) => {
+  const isEatenList = [];
+  for (let i = 0; i < foodList.length; i += 1) {
+    if (foodList[i].isEaten) {
+      isEatenList.push(i);
+    }
+  }
+  for (let i = isEatenList.length - 1; i >= 0; i -= 1) {
+    foodList.splice(isEatenList[i], 1);
+  }
+};
+
+
 export {
   updatePlayerPosition,
   updatePlayersBoxValue,
   checkAllEaten,
   removeEatenCells,
+  generateFoods,
+  checkAllFoodEaten,
+  removeEatenFoods,
 };

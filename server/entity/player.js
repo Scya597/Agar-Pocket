@@ -1,5 +1,7 @@
 import Cell from './cell';
 
+const TWEEN = require('@tweenjs/tween.js');
+
 /**
  * The Player class
  */
@@ -12,7 +14,7 @@ class Player {
     this.name = props.name;
     this.mousePos = { x: 100, y: 100 };
     this.cellList = [new Cell({
-      mass: 10000 + (5000 * Math.random()),
+      mass: 1000 + (500 * Math.random()),
       pos: { x: 100, y: 100 },
       id: props.id,
       color: 0x111111,
@@ -32,6 +34,29 @@ class Player {
    */
   updateCellList() {
     console.log(this.id);
+  }
+
+  /**
+   * split the cells in cellList
+   */
+  split() {
+    const cloneCellList = [];
+    this.cellList.forEach((cell) => {
+      cell.mass /= 2;
+      const cloneCell = new Cell({
+        mass: cell.mass,
+        pos: { x: cell.pos.x + 50, y: cell.pos.y + 50 },
+        id: cell.id,
+        color: cell.color,
+        vel: { x: cell.vel.x * 1.5, y: cell.vel.y * 1.5 },
+        isEaten: cell.isEaten,
+      });
+      cloneCellList.push(cloneCell);
+    });
+    cloneCellList.forEach((cloneCell) => {
+      this.cellList.push(cloneCell);
+    });
+    console.log(this.cellList);
   }
 
   /**

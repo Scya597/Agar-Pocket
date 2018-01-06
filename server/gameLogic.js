@@ -1,10 +1,13 @@
-import { updatePlayerPosition, updatePlayersBoxValue, checkAllEaten, removeEatenCells } from './physicsEngine';
+import { updatePlayerPosition, updatePlayersBoxValue,
+  checkAllEaten, removeEatenCells, generateFoods,
+  checkAllFoodEaten, removeEatenFoods } from './physicsEngine';
 import Player from './entity/player';
 import setting from '../src/game/config';
 
 export default function ioActivate(io) {
   const userList = [];
   const playerList = [];
+  const foodList = [];
 
   io.on('connection', (socket) => {
     console.log('New client connected');
@@ -34,8 +37,21 @@ export default function ioActivate(io) {
       }
     });
 
+    socket.on('PRESS_SPACE', (spaceData) => {
+      const player = playerList.find((element) => {
+        if (element.id === spaceData.id) {
+          return element;
+        }
+        return false;
+      });
+      if (player) {
+        player.split();
+      }
+    });
+
     socket.on('GET_DATA', () => {
       socket.emit('GET_PLAYERS_DATA', playerList);
+      socket.emit('GET_FOODS_DATA', foodList);
     });
 
     socket.on('disconnect', () => {
@@ -51,8 +67,10 @@ export default function ioActivate(io) {
     updatePlayersBoxValue(playerList);
     checkAllEaten(playerList);
     removeEatenCells(playerList);
+    generateFoods(foodList, setting);
+    checkAllFoodEaten(playerList, foodList);
+    removeEatenFoods(foodList);
   }, 1000 / 60);
 }
 
-// GET_FOODS_DATA
 // PRESS_SPACE

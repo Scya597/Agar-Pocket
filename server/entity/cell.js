@@ -15,8 +15,11 @@ class Cell extends Circle {
 
   /**
    * Use to eat other Cell and set their isEaten to true
+   * @param {object} [cell] - the Cell to be eaten
    */
-  eat() {
+  eat(cell) {
+    cell.isEaten = true;
+    this.mass += cell.mass;
     console.log(this.vel);
   }
 }

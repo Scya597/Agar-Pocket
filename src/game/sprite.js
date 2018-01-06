@@ -36,6 +36,10 @@ class FoodSprite extends Sprite {
     this.flag = false;
     this.anchor.set(0.5, 0.5);
   }
+  updatePos(pos) {
+  this.x = pos.x;
+  this.y = pos.y;
+  }
 }
 
 
