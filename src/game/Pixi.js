@@ -78,7 +78,8 @@ class Pixi extends Component {
     this.gameScene.addChild(this.bgContainer, this.playerContainer, this.foodContainer);
 
     this.socket.emit('INIT', { id: this.id, name: this.name });
-    // this.emitSpace();
+
+    this.initTicker();
     this.initSpaceEmitter();
     this.playerContainer.onGetPlayersData();
     this.foodContainer.onGetFoodsData();

@@ -50,6 +50,7 @@ class PlayerContainer extends Container {
         player.cellList.forEach((cell) => {
           let sprite = this.children.find(child => child.id === cell.id);
           if (sprite === undefined) {
+            console.log(cell);
             sprite = new CellSprite(cell);
             this.addChild(sprite);
           }
