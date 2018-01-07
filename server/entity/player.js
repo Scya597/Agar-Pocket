@@ -1,3 +1,4 @@
+import uuid from 'uuid/v1';
 import Cell from './cell';
 
 const TWEEN = require('@tweenjs/tween.js');
@@ -16,7 +17,7 @@ class Player {
     this.cellList = [new Cell({
       mass: 1000 + (500 * Math.random()),
       pos: { x: 100, y: 100 },
-      id: props.id,
+      id: uuid(),
       color: 0x111111,
       vel: { x: 0, y: 0 },
       isEaten: false,
@@ -27,6 +28,7 @@ class Player {
       yTop: 0,
       yBottom: 0,
     };
+    this.checkSplit = false;
   }
 
   /**
@@ -46,7 +48,7 @@ class Player {
       const cloneCell = new Cell({
         mass: cell.mass,
         pos: { x: cell.pos.x + 50, y: cell.pos.y + 50 },
-        id: cell.id,
+        id: uuid(),
         color: cell.color,
         vel: { x: cell.vel.x * 1.5, y: cell.vel.y * 1.5 },
         isEaten: cell.isEaten,
@@ -56,7 +58,10 @@ class Player {
     cloneCellList.forEach((cloneCell) => {
       this.cellList.push(cloneCell);
     });
-    console.log(this.cellList);
+    // console.log(this.cellList);
+
+
+    this.checkSplit = true;
   }
 
   /**

@@ -2,24 +2,76 @@ import uuid from 'uuid/v1';
 
 import Food from './entity/food';
 
+const countTwoCellDistance = (cellA, cellB, dt) => Math.sqrt((((cellA.pos.x + (cellA.vel.x * dt)) -
+  (cellB.pos.x)) ** 2) + (((cellA.pos.y + (cellA.vel.y * dt)) -
+  (cellB.pos.y)) ** 2));
+
+const checkTwoCellWillTouched = (cellA, cellB, dt) => {
+  if (countTwoCellDistance(cellA, cellB, dt) < (cellA.getRadius() + cellB.getRadius())) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const checkCellTouchBorderAndMove = (cell, setting, dt) => {
+  const cellRadius = cell.getRadius();
+  // if (dt > 1 / (60 * 32)) {
+  //
+  // }
+  if ((cell.pos.x + (cell.vel.x * dt)) - cellRadius >= 0 &&
+    (cell.pos.x + (cell.vel.x * dt)) + cellRadius <= setting.worldWidth) {
+    cell.pos.x += cell.vel.x * dt;
+  }
+  if ((cell.pos.y + (cell.vel.y * dt)) - cellRadius >= 0 &&
+    (cell.pos.y + (cell.vel.y * dt)) + cellRadius <= setting.worldHeight) {
+    cell.pos.y += cell.vel.y * dt;
+  }
+};
+
 const updatePlayerPosition = (playerList, setting) => {
   playerList.forEach((player) => {
     player.cellList.forEach((cell) => {
+      // need to consider mass to vel
       cell.vel.x = player.mousePos.x - cell.pos.x;
       cell.vel.y = player.mousePos.y - cell.pos.y;
     });
 
-    player.cellList.forEach((cell) => {
-      const cellRadius = cell.getRadius();
-      if ((cell.pos.x + (cell.vel.x * (1 / 60))) - cellRadius >= 0 &&
-        (cell.pos.x + (cell.vel.x * (1 / 60))) + cellRadius <= setting.worldWidth) {
-        cell.pos.x += cell.vel.x * (1 / 60);
+    const dt = 1 / 60;
+
+    if (player.checkSplit) {
+      for (let i = 0; i < player.cellList.length; i += 1) {
+        // check split case
+        let checkTime = 0;
+        let timeRatio = 1;
+        let willOverlap = false;
+        while (checkTime < 5) {
+          for (let j = 0; j < player.cellList.length; j += 1) {
+            if (j !== i) {
+              willOverlap = willOverlap ||
+                checkTwoCellWillTouched(player.cellList[i], player.cellList[j], dt * timeRatio);
+            }
+          }
+          if (willOverlap === true) {
+            timeRatio *= (1 / 2);
+            checkTime += 1;
+          } else {
+            checkTime = 5;
+          }
+        }
+
+        if (willOverlap === false) {
+          checkCellTouchBorderAndMove(player.cellList[i], setting, dt * timeRatio);
+        } else {
+          console.log('jaaaa');
+        }
       }
-      if ((cell.pos.y + (cell.vel.y * (1 / 60))) - cellRadius >= 0 &&
-        (cell.pos.y + (cell.vel.y * (1 / 60))) + cellRadius <= setting.worldHeight) {
-        cell.pos.y += cell.vel.y * (1 / 60);
-      }
-    });
+    } else {
+      // check Border Case
+      player.cellList.forEach((cell) => {
+        checkCellTouchBorderAndMove(cell, setting, dt);
+      });
+    }
   });
 };
 
