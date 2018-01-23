@@ -2,12 +2,89 @@ import uuid from 'uuid/v1';
 
 import Food from './entity/food';
 
+// leaving these vector helper functions here because resolveCollisions()
+// would be too ugly component-wise.
+// Move them into function scope if necessary.
+const vector2 = (function() {
+
+  const make = (x, y) => {
+    return { x: x, y: y };
+  };
+
+  const sum = (u, v) => {
+    return {
+             x: u.x + v.x,
+             y: u.y + v.y
+    };
+  };
+
+  const difference = (u, v) => {
+    return {
+             x: u.x - v.x,
+             y: u.y - v.y
+    };
+  };
+
+  const scale = (u, a) => {
+    return {
+             x: u.x*a,
+             y: u.y*a
+    };
+  };
+
+  const divide = (u, a) => {
+    // no checks for a == 0
+    return scale(u, 1/a);
+  };
+
+  const dot = (u, v) => {
+    return u.x*v.x + u.y*v.y;
+  };
+
+  const norm = (u) => {
+    return Math.sqrt(dot(u, u));
+  };
+
+  const unit = (u) => {
+    // no safety checks for zero vector.
+    return scale(u, 1/norm(u));
+  };
+
+  const unitNormal = (u) => {
+    const uu = unit(u);
+    return make(-uu.y, uu.x);
+  }
+
+  const project = (u, v) => {
+    // projects u onto v. Also no checks for zero vector.
+    return scale(
+                  v,
+                  dot(u, v)/dot(v, v)
+    );
+  };
+
+  return {
+    make: make,
+    sum: sum,
+    difference: difference,
+    scale: scale,
+    divide: divide,
+    dot: dot,
+    norm: norm,
+    unit: unit,
+    unitNormal: unitNormal,
+    project: project
+  }
+
+})();
+
 const countTwoCellDistance = (cellA, cellB, dtx, dty) =>
   Math.sqrt((((cellA.pos.x + (cellA.vel.x * dtx)) - (cellB.pos.x)) ** 2)
   + (((cellA.pos.y + (cellA.vel.y * dty)) - (cellB.pos.y)) ** 2));
 
-const checkTwoCellWillTouched = (cellA, cellB, dtx, dty) => {
-  if (countTwoCellDistance(cellA, cellB, dtx, dty) < (cellA.getRadius() + cellB.getRadius())) {
+const checkTwoCellWillTouched = (cellA, cellB, dtx, dty, epsilon) => {
+  epsilon = epsilon || 0;
+  if (countTwoCellDistance(cellA, cellB, dtx, dty) < (cellA.getRadius() + cellB.getRadius()) + epsilon) {
     return true;
   } else {
     return false;
@@ -29,6 +106,62 @@ const checkCellTouchBorderAndMove = (cell, setting, dtx, dty) => {
   }
 };
 
+const resolveCollisions = (cellList) => {
+
+  // possibly aesthetically pleasing to have a small gap between cells?
+  // otherwise just set this to 0.
+  const epsilon = 1;
+
+  const project = (cellA, cellB) => {
+
+    const d = vector2.difference(cellB.pos, cellA.pos);
+    const rA = cellA.getRadius();
+    const rB = cellB.getRadius();
+
+    const offset = (rA + rB - vector2.norm(d)) + epsilon;
+    const vRel = vector2.difference(cellB.vel, cellA.vel);
+    const ratio = cellA.mass/(cellA.mass + cellB.mass);
+
+    // these might crash things if two cells somehow end up
+    // *exactly* at the same location, but hopefull the timestep is
+    // small enough for that never to happen.
+    //
+    // (or i could write checks. but i'm lazy.)
+    const u = vector2.unit(d);
+    const n = vector2.unitNormal(d);
+
+    cellB.pos = vector2.sum(cellB.pos, vector2.scale(u, offset*ratio));
+    cellA.pos = vector2.sum(cellA.pos, vector2.scale(u, offset*(ratio-1)));
+
+    cellB.vel = vector2.sum(
+                  cellB.vel,
+                  vector2.scale(
+                    vector2.project(vRel, u),
+                    -ratio
+                  )
+                );
+    cellA.vel = vector2.sum(
+                  cellA.vel,
+                  vector2.scale(
+                    vector2.project(vRel, u),
+                    1-ratio
+                  )
+                );
+
+    
+  }
+
+  const maxIter = 12;
+  for (let iter = 0; iter < maxIter; ++iter) {
+    for (let i = 0; i < cellList.length; ++i) {
+    for (let j = i+1; j < cellList.length; ++j) {
+      if (checkTwoCellWillTouched(cellList[i], cellList[j], 0, 0, epsilon)) {
+        project(cellList[i], cellList[j]);
+      }
+    }}
+  }
+};
+
 const updatePlayerPosition = (playerList, setting) => {
   // 噴射碰撞
   // 吃東西變大碰撞
@@ -42,50 +175,10 @@ const updatePlayerPosition = (playerList, setting) => {
     const dtx = 1 / 60;
     const dty = 1 / 60;
 
-    if (player.checkSplit) {
-      for (let i = 0; i < player.cellList.length; i += 1) {
-        // check split case
-        let checkTime = 0;
-        let timeRatioX = 1;
-        let timeRatioY = 1;
-        let willOverlap = false;
-        while (checkTime < 5) {
-          for (let j = 0; j < player.cellList.length; j += 1) {
-            if (j !== i) {
-              willOverlap = willOverlap ||
-                checkTwoCellWillTouched(
-                  player.cellList[i], player.cellList[j],
-                  (dtx * timeRatioX), (dty * timeRatioY),
-                );
-            }
-          }
-          if (willOverlap === true) {
-            if (timeRatioX === timeRatioY) {
-              timeRatioX *= (1 / 2);
-            } else {
-              timeRatioY *= (1 / 2);
-            }
-            checkTime += (1 / 2);
-          } else {
-            checkTime = 5;
-          }
-        }
-
-        if (willOverlap === false) {
-          checkCellTouchBorderAndMove(
-            player.cellList[i], setting,
-            (dtx * timeRatioX), (dty * timeRatioY),
-          );
-        } else {
-          console.log('No overlap');
-        }
-      }
-    } else {
-      // check Border Case
-      player.cellList.forEach((cell) => {
-        checkCellTouchBorderAndMove(cell, setting, dtx, dty);
-      });
-    }
+    resolveCollisions(player.cellList);
+    player.cellList.forEach((cell) => {
+      checkCellTouchBorderAndMove(cell, setting, dtx, dty);
+    });
   });
 };
 
